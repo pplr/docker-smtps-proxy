@@ -1,0 +1,13 @@
+#!/bin/sh -eux
+
+echo "${SMTP_PROXY_CERT}" > /etc/stunnel/x509-server.pem
+echo "${SMTP_PROXY_KEY}"  > /etc/stunnel/x509-server-key.pem
+chmod 600 /etc/stunnel/x509-server-key.pem
+
+cat /etc/stunnel/stunnel-base.conf > /etc/stunnel/stunnel.conf
+echo "[smtps]
+    accept = 587
+    connect = ${SMTP_PROXY_SERVER}:${SMTP_PROXY_PORT}
+    protocol = smtp" >> /etc/stunnel/stunnel.conf
+
+exec "$@"
